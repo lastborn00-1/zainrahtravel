@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import heroImage from "@assets/generated_images/Tropical_beach_hero_image_e5b2e774.png";
 import { motion } from "framer-motion";
+
+const heroImage = "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=2000&auto=format&fit=crop";
 
 export default function Hero() {
   return (

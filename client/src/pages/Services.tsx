@@ -1,6 +1,5 @@
 import { Card } from "@/components/ui/card";
 import { Plane, FileCheck, Hotel, Users } from "lucide-react";
-import meccaImage from "@assets/generated_images/Mecca_Hajj_pilgrimage_af569257.png";
 
 export default function Services() {
   const services = [
@@ -83,7 +82,7 @@ export default function Services() {
                     {service.description}
                   </p>
                 </div>
-                
+
                 <div className="md:col-span-2">
                   <h3 className="font-semibold mb-4">What We Offer:</h3>
                   <ul className="grid sm:grid-cols-2 gap-3">
@@ -106,19 +105,19 @@ export default function Services() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="aspect-video rounded-lg overflow-hidden">
               <img
-                src={meccaImage}
+                src="https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=80&w=2000&auto=format&fit=crop"
                 alt="Hajj Pilgrimage"
                 className="w-full h-full object-cover"
               />
             </div>
-            
+
             <div>
               <h2 className="text-3xl font-bold mb-6" style={{ fontFamily: 'Playfair Display' }} data-testid="text-pilgrimage-title">
                 Pilgrimage Services
               </h2>
               <p className="text-muted-foreground mb-6" data-testid="text-pilgrimage-description">
-                Experience a spiritual journey of a lifetime with our expertly organized Umrah and Hajj packages. 
-                We understand the importance of this sacred pilgrimage and ensure every detail is handled with 
+                Experience a spiritual journey of a lifetime with our expertly organized Umrah and Hajj packages.
+                We understand the importance of this sacred pilgrimage and ensure every detail is handled with
                 care and respect.
               </p>
               <div className="space-y-4">

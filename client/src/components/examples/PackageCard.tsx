@@ -1,10 +1,11 @@
 import PackageCard from '../PackageCard'
-import dubaiImage from "@assets/generated_images/Dubai_UAE_destination_ebb3645a.png";
+import { Card, CardContent } from "@/components/ui/card";
+const dubaiImage = "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=2000&auto=format&fit=crop";
 
 export default function PackageCardExample() {
   return (
     <div className="w-96">
-      <PackageCard 
+      <PackageCard
         id={1}
         image={dubaiImage}
         name="Dubai Luxury Experience"
