@@ -2,6 +2,13 @@
     "version": 2,
     "buildCommand": "npm run build",
     "outputDirectory": "dist/public",
+    "env": {
+        "DATABASE_URL": "postgresql://postgres.rhtfxsnniojlydjvguuf:mattis-5gUmty-wimmir@aws-1-eu-west-2.pooler.supabase.com:5432/postgres",
+        "RESEND_API_KEY": "re_J3gZZgSb_2cmF6bKcKHwHH1bo2vN5mfRV",
+        "SESSION_SECRET": "zainrah_super_secret_2026",
+        "NODE_TLS_REJECT_UNAUTHORIZED": "0",
+        "NODE_ENV": "production"
+    },
     "rewrites": [
         {
             "source": "/api/:path*",
