@@ -20,7 +20,7 @@ app.use(express.json({
 app.use(express.urlencoded({ extended: false }));
 
 app.use(session({
-    cookie: { maxAge: 86400000 },
+    cookie: { maxAge: 86400000, secure: false },
     store: new MemoryStore({
         checkPeriod: 86400000
     }),
@@ -29,9 +29,14 @@ app.use(session({
     secret: process.env.SESSION_SECRET || "zainrah_secret"
 }));
 
-// Register all routes
-registerRoutes(app);
+// Initialize routes - must be done before first request
+const routesReady = registerRoutes(app).then(() => {
+    // routes registered
+}).catch(err => {
+    console.error("Failed to register routes:", err);
+});
 
+// Error handler
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
