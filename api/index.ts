@@ -1,7 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import createMemoryStore from "memorystore";
-import { registerRoutes } from "../server/routes";
+import { registerRoutes } from "../server/routes.js";
 
 const MemoryStore = createMemoryStore(session);
 const app = express();
@@ -22,7 +22,7 @@ app.use(session({
 // Diagnostic endpoint
 app.get("/api/health", (req, res) => {
     res.json({
-        status: "express-full-alive",
+        status: "express-esm-ready",
         timestamp: new Date().toISOString(),
         databaseConfigured: !!process.env.DATABASE_URL
     });
