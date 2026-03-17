@@ -20,11 +20,25 @@ app.use(session({
 }));
 
 // Diagnostic endpoint
-app.get("/api/health", (req, res) => {
+app.get("/api/health", async (req, res) => {
+    let dbStatus = "not-tested";
+    let dbError = null;
+    try {
+        const { db } = await import("../server/db.js");
+        const { sql } = await import("drizzle-orm");
+        await db.execute(sql`SELECT 1`);
+        dbStatus = "connected";
+    } catch (err: any) {
+        dbStatus = "failed";
+        dbError = err.message;
+    }
+
     res.json({
         status: "express-esm-ready",
         timestamp: new Date().toISOString(),
-        databaseConfigured: !!process.env.DATABASE_URL
+        databaseConfigured: !!process.env.DATABASE_URL,
+        dbStatus,
+        dbError
     });
 });
 
