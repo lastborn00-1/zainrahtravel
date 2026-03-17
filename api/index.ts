@@ -1,69 +1,13 @@
-import express, { type Request, Response, NextFunction } from "express";
-import session from "express-session";
-import createMemoryStore from "memorystore";
-import { registerRoutes } from "../server/routes";
-
-const MemoryStore = createMemoryStore(session);
+import express from "express";
 const app = express();
 
-declare module 'http' {
-    interface IncomingMessage {
-        rawBody: unknown
-    }
-}
-
-app.use(express.json({
-    verify: (req, _res, buf) => {
-        req.rawBody = buf;
-    }
-}));
-app.use(express.urlencoded({ extended: false }));
-
-app.use(session({
-    cookie: { maxAge: 86400000, secure: false },
-    store: new MemoryStore({
-        checkPeriod: 86400000
-    }),
-    resave: false,
-    saveUninitialized: false,
-    secret: process.env.SESSION_SECRET || "zainrah_secret"
-}));
-
-// Diagnostic endpoint
-app.get("/api/health", (_req, res) => {
+app.get("/api/health", (req, res) => {
     res.json({
-        status: "ok",
+        status: "alive",
+        timestamp: new Date().toISOString(),
         databaseConfigured: !!process.env.DATABASE_URL,
-        nodeEnv: process.env.NODE_ENV,
-        databaseUrlStart: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 20) + "..." : "missing"
+        nodeVersion: process.version
     });
-});
-
-// Initialize routes
-let isRoutesReady = false;
-const routesPromise = registerRoutes(app).then(() => {
-    isRoutesReady = true;
-}).catch(err => {
-    console.error("Failed to register routes:", err);
-});
-
-// Middleware to ensure routes are ready
-app.use(async (_req, _res, next) => {
-    try {
-        if (!isRoutesReady) {
-            await routesPromise;
-        }
-        next();
-    } catch (err) {
-        next(err);
-    }
-});
-
-// Error handler
-app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-    res.status(status).json({ message });
 });
 
 export default app;
