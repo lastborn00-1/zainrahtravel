@@ -39,10 +39,14 @@ const routesPromise = registerRoutes(app).then(() => {
 
 // Middleware to ensure routes are ready
 app.use(async (_req, _res, next) => {
-    if (!isRoutesReady) {
-        await routesPromise;
+    try {
+        if (!isRoutesReady) {
+            await routesPromise;
+        }
+        next();
+    } catch (err) {
+        next(err);
     }
-    next();
 });
 
 // Error handler

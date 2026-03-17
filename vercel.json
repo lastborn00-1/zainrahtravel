@@ -3,7 +3,7 @@
     "buildCommand": "npm run build",
     "outputDirectory": "dist/public",
     "env": {
-        "DATABASE_URL": "postgresql://postgres.rhtfxsnniojlydjvguuf:mattis-5gUmty-wimmir@aws-0-eu-west-2.pooler.supabase.com:6543/postgres?options=project%3Drhtfxsnniojlydjvguuf",
+        "DATABASE_URL": "postgresql://postgres:mattis-5gUmty-wimmir@aws-0-eu-west-2.pooler.supabase.com:6543/postgres?options=project%3Drhtfxsnniojlydjvguuf&sslmode=require",
         "RESEND_API_KEY": "re_J3gZZgSb_2cmF6bKcKHwHH1bo2vN5mfRV",
         "SESSION_SECRET": "zainrah_super_secret_2026",
         "NODE_ENV": "production"
