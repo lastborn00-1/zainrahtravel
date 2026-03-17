@@ -29,11 +29,20 @@ app.use(session({
     secret: process.env.SESSION_SECRET || "zainrah_secret"
 }));
 
-// Initialize routes - must be done before first request
-const routesReady = registerRoutes(app).then(() => {
-    // routes registered
+// Initialize routes
+let isRoutesReady = false;
+const routesPromise = registerRoutes(app).then(() => {
+    isRoutesReady = true;
 }).catch(err => {
     console.error("Failed to register routes:", err);
+});
+
+// Middleware to ensure routes are ready
+app.use(async (_req, _res, next) => {
+    if (!isRoutesReady) {
+        await routesPromise;
+    }
+    next();
 });
 
 // Error handler
