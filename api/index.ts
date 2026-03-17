@@ -1,13 +1,9 @@
-import express from "express";
-const app = express();
-
-app.get("/api/health", (req, res) => {
-    res.json({
+export default function handler(req, res) {
+    res.setHeader('Content-Type', 'application/json');
+    res.statusCode = 200;
+    res.end(JSON.stringify({
         status: "alive",
-        timestamp: new Date().toISOString(),
-        databaseConfigured: !!process.env.DATABASE_URL,
-        nodeVersion: process.version
-    });
-});
-
-export default app;
+        type: "plain-node",
+        timestamp: new Date().toISOString()
+    }));
+}
