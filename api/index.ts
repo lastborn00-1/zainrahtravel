@@ -29,6 +29,16 @@ app.use(session({
     secret: process.env.SESSION_SECRET || "zainrah_secret"
 }));
 
+// Diagnostic endpoint
+app.get("/api/health", (_req, res) => {
+    res.json({
+        status: "ok",
+        databaseConfigured: !!process.env.DATABASE_URL,
+        nodeEnv: process.env.NODE_ENV,
+        databaseUrlStart: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 20) + "..." : "missing"
+    });
+});
+
 // Initialize routes
 let isRoutesReady = false;
 const routesPromise = registerRoutes(app).then(() => {
