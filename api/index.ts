@@ -1,13 +1,13 @@
 import express from "express";
-import * as schema from "../shared/schema";
+import { z } from "zod";
 
 const app = express();
 
 app.get("/api/health", (req, res) => {
     res.json({
-        status: "express-schema-import-attempt",
+        status: "express-zod-import-attempt",
         timestamp: new Date().toISOString(),
-        schemaKeys: Object.keys(schema)
+        zodType: typeof z
     });
 });
 
