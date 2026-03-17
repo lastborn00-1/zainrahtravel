@@ -1,39 +1,59 @@
-import express from "express";
-import fs from "fs";
-import path from "path";
+import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
+import createMemoryStore from "memorystore";
+import { registerRoutes } from "../server/routes";
 
+const MemoryStore = createMemoryStore(session);
 const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.use(session({
+    cookie: { maxAge: 86400000, secure: false },
+    store: new MemoryStore({
+        checkPeriod: 86400000
+    }),
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.SESSION_SECRET || "zainrah_secret"
+}));
+
+// Diagnostic endpoint
 app.get("/api/health", (req, res) => {
-    const rootDir = "/var/task";
-    const files: string[] = [];
-
-    function walk(dir: string, depth = 0) {
-        if (depth > 2) return;
-        try {
-            const list = fs.readdirSync(dir);
-            for (const file of list) {
-                const fullPath = path.join(dir, file);
-                const stats = fs.statSync(fullPath);
-                if (stats.isDirectory()) {
-                    files.push(`D: ${fullPath}`);
-                    walk(fullPath, depth + 1);
-                } else {
-                    files.push(`F: ${fullPath}`);
-                }
-            }
-        } catch (err: any) {
-            files.push(`E: ${dir} - ${err.message}`);
-        }
-    }
-
-    walk(rootDir);
-
     res.json({
-        status: "file-system-check",
-        rootDir,
-        files
+        status: "express-full-alive",
+        timestamp: new Date().toISOString(),
+        databaseConfigured: !!process.env.DATABASE_URL
     });
+});
+
+// Initialize routes
+let isRoutesReady = false;
+const routesPromise = registerRoutes(app).then(() => {
+    isRoutesReady = true;
+}).catch(err => {
+    console.error("Failed to register routes:", err);
+    throw err;
+});
+
+// Middleware to ensure routes are ready
+app.use(async (_req, _res, next) => {
+    try {
+        if (!isRoutesReady) {
+            await routesPromise;
+        }
+        next();
+    } catch (err) {
+        next(err);
+    }
+});
+
+// Error handler
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+    res.status(status).json({ message });
 });
 
 export default app;
