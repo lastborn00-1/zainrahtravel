@@ -1,27 +1,59 @@
-import express from "express";
+import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
+import createMemoryStore from "memorystore";
+import { registerRoutes } from "../server/routes";
+
+const MemoryStore = createMemoryStore(session);
 const app = express();
 
-app.get("/api/health", async (req, res) => {
-    const results: any = { status: "dynamic-import-test" };
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
+app.use(session({
+    cookie: { maxAge: 86400000, secure: false },
+    store: new MemoryStore({
+        checkPeriod: 86400000
+    }),
+    resave: false,
+    saveUninitialized: false,
+    secret: process.env.SESSION_SECRET || "zainrah_secret"
+}));
+
+// Diagnostic endpoint
+app.get("/api/health", (req, res) => {
+    res.json({
+        status: "express-full-alive",
+        timestamp: new Date().toISOString(),
+        databaseConfigured: !!process.env.DATABASE_URL
+    });
+});
+
+// Initialize routes
+let isRoutesReady = false;
+const routesPromise = registerRoutes(app).then(() => {
+    isRoutesReady = true;
+}).catch(err => {
+    console.error("Failed to register routes:", err);
+    throw err;
+});
+
+// Middleware to ensure routes are ready
+app.use(async (_req, _res, next) => {
     try {
-        results.zodImport = "attempting...";
-        const zod = await import("zod");
-        results.zodImport = "success";
-        results.zodType = typeof zod.z;
-    } catch (err: any) {
-        results.zodImport = "failed: " + err.message;
+        if (!isRoutesReady) {
+            await routesPromise;
+        }
+        next();
+    } catch (err) {
+        next(err);
     }
+});
 
-    try {
-        results.schemaImport = "attempting...";
-        const schema = await import("../shared/schema");
-        results.schemaImport = "success";
-    } catch (err: any) {
-        results.schemaImport = "failed: " + err.message;
-    }
-
-    res.json(results);
+// Error handler
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+    res.status(status).json({ message });
 });
 
 export default app;

@@ -8,7 +8,7 @@ import {
   packages,
   bookings,
   admins
-} from "@shared/schema";
+} from "../shared/schema";
 import { db } from "./db";
 import { eq, sql, desc } from "drizzle-orm";
 
