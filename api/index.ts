@@ -1,6 +1,7 @@
 import express from "express";
 import session from "express-session";
 import createMemoryStore from "memorystore";
+import { registerRoutes } from "../server/routes";
 
 const MemoryStore = createMemoryStore(session);
 const app = express();
@@ -17,9 +18,9 @@ app.use(session({
 
 app.get("/api/health", (req, res) => {
     res.json({
-        status: "express-session-alive",
+        status: "express-routes-import-attempt",
         timestamp: new Date().toISOString(),
-        databaseConfigured: !!process.env.DATABASE_URL
+        registerRoutesType: typeof registerRoutes
     });
 });
 
